@@ -97,6 +97,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "boa_examples"
+version = "0.11.0"
+dependencies = [
+ "Boa",
+]
+
+[[package]]
 name = "boa_tester"
 version = "0.13.0"
 dependencies = [
