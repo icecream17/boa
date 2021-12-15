@@ -153,7 +153,7 @@ where
     fn from(value: Option<T>) -> Self {
         match value {
             Some(value) => value.into(),
-            None => JsValue::null(),
+            None => JsValue::undefined(),
         }
     }
 }
