@@ -62,6 +62,14 @@ impl JsArray {
     }
 
     #[inline]
+    pub fn at<T>(&self, index: T, context: &mut Context) -> JsResult<JsValue>
+    where
+        T: Into<i64>,
+    {
+        Array::at(&self.inner.clone().into(), &[index.into().into()], context)
+    }
+
+    #[inline]
     pub fn shift(&self, context: &mut Context) -> JsResult<JsValue> {
         Array::shift(&self.inner.clone().into(), &[], context)
     }
@@ -75,6 +83,16 @@ impl JsArray {
     pub fn reverse(&self, context: &mut Context) -> JsResult<Self> {
         Array::reverse(&self.inner.clone().into(), &[], context)?;
         Ok(self.clone())
+    }
+
+    #[inline]
+    pub fn concat(&self, items: &[JsValue], context: &mut Context) -> JsResult<Self> {
+        let object = Array::concat(&self.inner.clone().into(), items, context)?
+            .as_object()
+            .cloned()
+            .expect("Array.prototype.filter should always return object");
+
+        Self::from(object, context)
     }
 
     #[inline]
@@ -122,11 +140,179 @@ impl JsArray {
         )?
         .as_number()
         .expect("Array.prototype.indexOf should always return number");
+
         if index == -1.0 {
             Ok(None)
         } else {
             Ok(Some(index as u32))
         }
+    }
+
+    #[inline]
+    pub fn last_index_of<T>(
+        &self,
+        search_element: T,
+        from_index: Option<u32>,
+        context: &mut Context,
+    ) -> JsResult<Option<u32>>
+    where
+        T: Into<JsValue>,
+    {
+        let index = Array::last_index_of(
+            &self.inner.clone().into(),
+            &[search_element.into(), from_index.into()],
+            context,
+        )?
+        .as_number()
+        .expect("Array.prototype.lastIndexOf should always return number");
+
+        if index == -1.0 {
+            Ok(None)
+        } else {
+            Ok(Some(index as u32))
+        }
+    }
+
+    #[inline]
+    pub fn find(
+        &self,
+        predicate: JsObject,
+        this_arg: Option<JsValue>,
+        context: &mut Context,
+    ) -> JsResult<JsValue> {
+        Array::find(
+            &self.inner.clone().into(),
+            &[predicate.into(), this_arg.into()],
+            context,
+        )
+    }
+
+    #[inline]
+    pub fn filter(
+        &self,
+        callback: JsObject,
+        this_arg: Option<JsValue>,
+        context: &mut Context,
+    ) -> JsResult<Self> {
+        let object = Array::filter(
+            &self.inner.clone().into(),
+            &[callback.into(), this_arg.into()],
+            context,
+        )?
+        .as_object()
+        .cloned()
+        .expect("Array.prototype.filter should always return object");
+
+        Self::from(object, context)
+    }
+
+    #[inline]
+    pub fn map(
+        &self,
+        callback: JsObject,
+        this_arg: Option<JsValue>,
+        context: &mut Context,
+    ) -> JsResult<Self> {
+        let object = Array::map(
+            &self.inner.clone().into(),
+            &[callback.into(), this_arg.into()],
+            context,
+        )?
+        .as_object()
+        .cloned()
+        .expect("Array.prototype.map should always return object");
+
+        Self::from(object, context)
+    }
+
+    #[inline]
+    pub fn every(
+        &self,
+        callback: JsObject,
+        this_arg: Option<JsValue>,
+        context: &mut Context,
+    ) -> JsResult<bool> {
+        let result = Array::every(
+            &self.inner.clone().into(),
+            &[callback.into(), this_arg.into()],
+            context,
+        )?
+        .as_boolean()
+        .expect("Array.prototype.every should always return boolean");
+
+        Ok(result)
+    }
+
+    #[inline]
+    pub fn some(
+        &self,
+        callback: JsObject,
+        this_arg: Option<JsValue>,
+        context: &mut Context,
+    ) -> JsResult<bool> {
+        let result = Array::some(
+            &self.inner.clone().into(),
+            &[callback.into(), this_arg.into()],
+            context,
+        )?
+        .as_boolean()
+        .expect("Array.prototype.some should always return boolean");
+
+        Ok(result)
+    }
+
+    #[inline]
+    pub fn sort(&self, compare_fn: Option<JsObject>, context: &mut Context) -> JsResult<Self> {
+        Array::sort(&self.inner.clone().into(), &[compare_fn.into()], context)?;
+
+        Ok(self.clone())
+    }
+
+    #[inline]
+    pub fn slice(
+        &self,
+        start: Option<u32>,
+        end: Option<u32>,
+        context: &mut Context,
+    ) -> JsResult<Self> {
+        let object = Array::slice(
+            &self.inner.clone().into(),
+            &[start.into(), end.into()],
+            context,
+        )?
+        .as_object()
+        .cloned()
+        .expect("Array.prototype.slice should always return object");
+
+        Self::from(object, context)
+    }
+
+    #[inline]
+    pub fn reduce(
+        &self,
+        callback: JsObject,
+        initial_value: Option<JsValue>,
+        context: &mut Context,
+    ) -> JsResult<JsValue> {
+        Array::reduce(
+            &self.inner.clone().into(),
+            &[callback.into(), initial_value.into()],
+            context,
+        )
+    }
+
+    #[inline]
+    pub fn reduce_right(
+        &self,
+        callback: JsObject,
+        initial_value: Option<JsValue>,
+        context: &mut Context,
+    ) -> JsResult<JsValue> {
+        Array::reduce_right(
+            &self.inner.clone().into(),
+            &[callback.into(), initial_value.into()],
+            context,
+        )
     }
 
     // TODO: Other Array methods
