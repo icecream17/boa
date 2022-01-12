@@ -33,7 +33,7 @@ macro_rules! full_benchmarks {
                     let statement_list = parse(CODE, false).unwrap();
                     c.bench_function(concat!($id, " (Compiler)"), move |b| {
                         b.iter(|| {
-                            Context::compile(black_box(statement_list.clone()));
+                            Context::compile(black_box(&statement_list));
                         })
                     });
                 }
@@ -44,7 +44,7 @@ macro_rules! full_benchmarks {
                 {
                     static CODE: &str = include_str!(concat!("bench_scripts/", stringify!($name), ".js"));
                     let statement_list = parse(CODE, false).unwrap();
-                    let code_block = Context::compile(statement_list);
+                    let code_block = Context::compile(&statement_list);
                     let mut context = Context::new();
                     c.bench_function(concat!($id, " (Execution)"), move |b| {
                         b.iter(|| {
